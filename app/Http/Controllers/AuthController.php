@@ -2,34 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Traits\Auth\AuthResponse;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 
 class AuthController extends Controller
 {
-    use AuthResponse;
+    /**
+     * Create a new AuthController instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login']]);
     }
-    public function login(Request $request)
+
+    /**
+     * Get a JWT via given credentials.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function login()
     {
-        $validated = $this->customValidate($request, [
+        $credentials = $this->customValidate(request(), [
             'email' => 'required|email',
-            'password' => 'required|string'
+            'password' => 'required|string',
         ]);
-        if (!$token = auth()->attempt($validated)) {
-            return $this->resultError('Wrong email or password', 'Wrong email or password', null, 401);
+        if (! $token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $response = [
-            "token" => $token,
-            "user" => auth()->user()
-        ];
-        // return $this->respondWithCookie()->json($response);
-        return response()->json($response);
+
+        return $this->respondWithToken($token);
     }
+
     /**
      * Get the authenticated User.
      *
@@ -37,16 +41,14 @@ class AuthController extends Controller
      */
     public function me()
     {
-        try {
-            $auth = auth()->user();
-            $userController = new UsersController();
-            $userData = $userController->getCompanyAndType($auth->id);
-        } catch (\Exception $error) {
-            return response()->json($error->getMessage(), 500);
-        }
-        return response()->json($userData);
+        return response()->json(auth()->user());
     }
 
+    /**
+     * Log the user out (Invalidate the token).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout()
     {
         auth()->logout();
@@ -54,6 +56,11 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
+    /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function refresh()
     {
         return $this->respondWithToken(auth()->refresh());
