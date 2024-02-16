@@ -9,6 +9,7 @@ Route::prefix('users')
     ->group(function () {
         Route::get('/', 'indexById');
         Route::get('/index', 'index');
+        Route::post('store', 'store');
     });
 
 Route::prefix('auth')

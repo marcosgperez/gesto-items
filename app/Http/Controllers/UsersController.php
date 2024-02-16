@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
+    const COLORS = [
+        "#FFCC80",
+        "#FFAB91",
+        "#FFF176",
+        "#B39DDB",
+        "#80CBC4",
+        "#90CAF9"
+    ];
     public function index()
     {
         try {
@@ -28,6 +36,30 @@ class UsersController extends Controller
             if (empty($user)) {
                 return $this->resultError('User not found');
             }
+        } catch (\Exception $error) {
+            return $this->resultError($error->getMessage());
+        }
+        return $this->resultOk($user);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $this->customValidate($request, [
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|string',
+            'type_id' => 'required|integer',
+        ]);
+        try {
+            $user = new User();
+            $user->name = $validated['name'];
+            $user->email = $validated['email'];
+            $user->password = Hash::make($validated['password']);
+            $user->user_type_id = $validated['type_id'];
+            $initials = strtoupper(substr($validated['name'], 0, 1) . substr($validated['name'], -1, 1));
+            $user->profile_initials = $initials;
+            $user->profile_color = self::COLORS[array_rand(self::COLORS)];
+            $user->save();
         } catch (\Exception $error) {
             return $this->resultError($error->getMessage());
         }

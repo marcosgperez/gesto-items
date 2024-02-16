@@ -16,7 +16,7 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        $validated = $this->validate($request, [
+        $validated = $this->customValidate($request, [
             'email' => 'required|email',
             'password' => 'required|string'
         ]);
