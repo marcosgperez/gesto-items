@@ -95,3 +95,34 @@ INSERT INTO event_types (name) VALUES
 ('MANTENIMIENTO')
 ('ROTURA'),
 ('REPARACION');
+
+CREATE TABLE floors (
+    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL.
+    `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+);
+
+
+CREATE TABLE users (
+    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL.
+    `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `surname` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `email` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `password` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `user_type_id` int UNSIGNED NOT NULL,
+    `profile_initials` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `profile_color` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+);
+
+CREATE TABLE user_types (
+    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL.
+    `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+);

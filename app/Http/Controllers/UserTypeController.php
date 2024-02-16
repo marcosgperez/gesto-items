@@ -45,5 +45,5 @@ class UserTypeController extends Controller
         }
         return $this->resultOk($type);
     }
-    
+
 }

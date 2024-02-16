@@ -7,6 +7,6 @@ Route::prefix('user-types')
     ->controller(UserTypeController::class)
     ->group(function () {
         Route::get('/', 'index');
-        Route::post('store', 'store');
+        Route::post('/', 'store');
         Route::post('remove', 'remove');
     });

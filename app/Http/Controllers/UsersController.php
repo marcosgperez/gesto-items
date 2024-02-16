@@ -46,20 +46,43 @@ class UsersController extends Controller
     {
         $validated = $this->customValidate($request, [
             'name' => 'required|string',
+            'surname' => 'required|string',
             'email' => 'required|email',
             'password' => 'required|string',
-            'type_id' => 'required|integer',
+            'user_type_id' => 'required|integer',
         ]);
         try {
             $user = new User();
             $user->name = $validated['name'];
+            $user->surname = $validated['surname'];
             $user->email = $validated['email'];
             $user->password = Hash::make($validated['password']);
-            $user->user_type_id = $validated['type_id'];
+            $userTypes = UserTypes::find($validated['user_type_id']);
+            if (empty($userTypes)) {
+                return $this->resultError('User type not found');
+            }
+            $user->user_type_id = $validated['user_type_id'];
             $initials = strtoupper(substr($validated['name'], 0, 1) . substr($validated['name'], -1, 1));
             $user->profile_initials = $initials;
             $user->profile_color = self::COLORS[array_rand(self::COLORS)];
             $user->save();
+        } catch (\Exception $error) {
+            return $this->resultError($error->getMessage());
+        }
+        return $this->resultOk($user);
+    }
+
+    public function remove(Request $request)
+    {
+        $validated = $this->customValidate($request, [
+            'id' => 'required|integer',
+        ]);
+        try {
+            $user = User::find($validated['id']);
+            if (empty($user)) {
+                return $this->resultError('User not found');
+            }
+            $user->delete();
         } catch (\Exception $error) {
             return $this->resultError($error->getMessage());
         }

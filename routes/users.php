@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('users')
     ->controller(UsersController::class)
     ->group(function () {
-        Route::get('/', 'indexById');
-        Route::get('/index', 'index');
-        Route::post('store', 'store');
+        Route::get('/', 'index');
+        Route::get('/index-by-id', 'indexById');
+        Route::post('/', 'store');
+        Route::post('/remove', 'remove');
     });
 
 Route::prefix('auth')
