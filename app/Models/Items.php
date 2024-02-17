@@ -18,6 +18,8 @@ class Items extends Model
         'model',
         'chasis',
         'description',
-        'manual'
+        'manual',
+        'sector_id',
+        'floor_id'
     ];
 }
