@@ -4,10 +4,10 @@ FROM php:8.2.8-fpm
 
 # Instalar las dependencias requeridas
 RUN apt-get update \
-    && apt-get install -y libpng-dev libzip-dev zip \
+    && apt-get install -y libpng-dev libzip-dev zip libmagickwand-dev \
     && docker-php-ext-install gd pdo pdo_mysql \
-    && docker-php-ext-configure gd 
-
+    && pecl install imagick \
+    && docker-php-ext-enable imagick
 
 # Me paro en la ruta del proyecto 
 WORKDIR /var/www/html/

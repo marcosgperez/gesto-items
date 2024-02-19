@@ -93,6 +93,14 @@ ALTER TABLE parts
 ADD COLUMN item_id int,
 ADD FOREIGN KEY (item_id) REFERENCES items(id);
 
+ALTER TABLE items
+ADD COLUMN sector_id int UNSIGNED,
+ADD FOREIGN KEY (sector_id) REFERENCES sectors(id);
+
+ALTER TABLE items
+ADD COLUMN floor_id int UNSIGNED,
+ADD FOREIGN KEY (floor_id) REFERENCES floors(id);
+
 INSERT INTO event_types (name) VALUES
 ('CARGA INICIAL'),
 ('MODIFICACION'),

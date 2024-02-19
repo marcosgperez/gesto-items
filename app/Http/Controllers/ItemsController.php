@@ -6,9 +6,22 @@ use App\Models\Histories;
 use App\Models\Sectors;
 use App\Models\Items;
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Storage;
 
 class ItemsController extends Controller
 {
+
+    private function _generateAndUploadQr($itemId)
+    {
+        $frontUrl = "http://localhost:8000/item?item_id=$itemId";
+        $fileName = "qr-code-$itemId.png"; // Nombre del archivo en S3
+        $qrCode = QrCode::size(200)->format('png')->generate($frontUrl);
+        Storage::disk('s3')->put($fileName, $qrCode);
+        $url = 'https://gesto-items.s3.amazonaws.com/' . $fileName;
+        return $url;
+    }
+    
     public function index()
     {
         try {
@@ -19,7 +32,7 @@ class ItemsController extends Controller
         return $this->resultOk($items);
     }
 
-    public function store (Request $request)
+    public function store(Request $request)
     {
         $validated = $this->customValidate($request, [
             'name' => 'required|string',
@@ -33,10 +46,12 @@ class ItemsController extends Controller
             'manual' => '',
             'photos' => '',
         ]);
+    
         $sector = Sectors::find($validated['sector_id']);
         if (empty($sector)) {
             return $this->resultError('Sector not found');
         }
+    
         $item = new Items();
         $item->name = $validated['name'];
         $item->photos = $validated['photos'] ?? '';
@@ -51,20 +66,18 @@ class ItemsController extends Controller
         $item->floor_id = $sector->floor_id;
         try {
             $item->save();
-        } catch (\Exception $error) {
-            return $this->resultError($error->getMessage());
-        }
-        if ($item->id) {
+            $qr = $this->_generateAndUploadQr($item->id);
+            $item->qr = $qr;
+            $item->save();
             $history = new Histories();
             $history->item_id = $item->id;
-            try {
-                $history->save();
-            } catch (\Exception $error) {
-                $item->delete();
-                return $this->resultError($error->getMessage());
-            }
+            $history->save();
+            return $this->resultOk($item);
+        } catch (\Exception $error) {
+            // En caso de error, devolver un error
+            return $this->resultError($error->getMessage());
         }
-        return $this->resultOk($item);
     }
+    
     
 }
