@@ -2,7 +2,7 @@ CREATE TABLE floors (
     `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `deleted_at` timestamp NULL DEFAULT NULL.
+    `deleted_at` timestamp NULL DEFAULT NULL,
     `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 );
 
@@ -10,12 +10,12 @@ CREATE TABLE sectors (
     `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `deleted_at` timestamp NULL DEFAULT NULL.
+    `deleted_at` timestamp NULL DEFAULT NULL,
     `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 );
 
 CREATE TABLE items (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at` TIMESTAMP,
@@ -46,7 +46,7 @@ CREATE TABLE events (
     `event_type` VARCHAR(255),
     `start_date` TIMESTAMP,
     `end_date` TIMESTAMP,
-    `description` TEXT
+    `description` TEXT,
     `photos` VARCHAR(255),
     `observations` TEXT
 );
@@ -74,42 +74,38 @@ CREATE TABLE parts (
 );
 
 ALTER TABLE sectors
-ADD FOREING KEY (floor_id) REFERENCES floors(id);
+ADD COLUMN floor_id int UNSIGNED,
+ADD FOREIGN KEY (floor_id) REFERENCES floors(id);
 
 ALTER TABLE histories
-ADD FOREING KEY (item_id) REFERENCES items(id);
+ADD COLUMN item_id int,
+ADD FOREIGN KEY (item_id) REFERENCES items(id);
 
 ALTER TABLE events
-ADD FOREING KEY (history_id) REFERENCES histories(id);
+ADD COLUMN history_id int,
+ADD FOREIGN KEY (history_id) REFERENCES histories(id);
 
 ALTER TABLE events
-ADD FOREING KEY (item_id) REFERENCES items(id);
+ADD COLUMN item_id int,
+ADD FOREIGN KEY (item_id) REFERENCES items(id);
 
 ALTER TABLE parts
-ADD FOREING KEY (item_id) REFERENCES items(id);
+ADD COLUMN item_id int,
+ADD FOREIGN KEY (item_id) REFERENCES items(id);
 
 INSERT INTO event_types (name) VALUES
 ('CARGA INICIAL'),
 ('MODIFICACION'),
 ('MEDICION'),
-('MANTENIMIENTO')
+('MANTENIMIENTO'),
 ('ROTURA'),
 ('REPARACION');
-
-CREATE TABLE floors (
-    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `deleted_at` timestamp NULL DEFAULT NULL.
-    `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
-);
-
 
 CREATE TABLE users (
     `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `deleted_at` timestamp NULL DEFAULT NULL.
+    `deleted_at` timestamp NULL DEFAULT NULL,
     `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
     `surname` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
     `email` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
@@ -123,6 +119,6 @@ CREATE TABLE user_types (
     `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `deleted_at` timestamp NULL DEFAULT NULL.
+    `deleted_at` timestamp NULL DEFAULT NULL,
     `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 );
