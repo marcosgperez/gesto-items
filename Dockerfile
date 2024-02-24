@@ -1,5 +1,5 @@
 # Used for prod build.
-FROM 702643951612.dkr.ecr.us-east-1.amazonaws.com/prod-gesto-items-base-image:latest as php
+FROM 702643951612.dkr.ecr.us-west-1.amazonaws.com/prod-gesto-items-base-image:latest as php
 
 # Copy configuration files.
 COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
