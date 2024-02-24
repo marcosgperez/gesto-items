@@ -25,6 +25,10 @@ COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Ensure the directory exists and has correct permissions before installing Composer dependencies
+# Create the vendor directory and adjust permissions
+RUN mkdir -p /app/vendor && chown www-data:www-data /app/vendor
+
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json ./
 
