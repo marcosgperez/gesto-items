@@ -9,7 +9,7 @@ phases:
     on-failure: ABORT
     commands:
       - echo 'loggin in ecr'
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY
+      - aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin $REPOSITORY
   build:
     on-failure: ABORT
     commands:
