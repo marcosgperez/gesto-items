@@ -14,7 +14,7 @@ class ItemsController extends Controller
 
     private function _generateAndUploadQr($itemId)
     {
-        $frontUrl = "http://localhost:8000/item?item_id=$itemId";
+        $frontUrl = "gestoitems://item?item_id=$itemId";
         $fileName = "qr-code-$itemId.png"; // Nombre del archivo en S3
         $qrCode = QrCode::size(200)->format('png')->generate($frontUrl);
         Storage::disk('s3')->put($fileName, $qrCode);

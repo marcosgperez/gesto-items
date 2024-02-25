@@ -1,6 +1,13 @@
 # Usado para la construcción en producción.
 FROM 702643951612.dkr.ecr.us-west-1.amazonaws.com/prod-gesto-items-base-image:latest as php
 
+# Instala ImageMagick y la extensión Imagick de PHP.
+# Nota: Los comandos exactos pueden variar dependiendo de la imagen base de tu contenedor.
+RUN apt-get update && apt-get install -y \
+    libmagickwand-dev --no-install-recommends \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick
+
 # Copia los archivos de configuración.
 COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
 COPY ./docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
