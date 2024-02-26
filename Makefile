@@ -40,7 +40,9 @@ fresh-prod: ## Destroy & recreate all using prod containers.
 	make destroy-prod
 	make build-prod
 	make start-prod
-
+auth:
+	aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin 702643951612.dkr.ecr.us-west-1.amazonaws.com
+	
 ssh: ## SSH into PHP container
 	docker exec -it ${CONTAINER_PHP} sh
 

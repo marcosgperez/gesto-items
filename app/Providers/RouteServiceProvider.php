@@ -49,7 +49,6 @@ class RouteServiceProvider extends ServiceProvider
                     require base_path('routes/histories.php');
                     require base_path('routes/floors.php');
                     require base_path('routes/eventTypes.php');
-                    require base_path('routes/events.php');
                 });
 
             Route::middleware('web')

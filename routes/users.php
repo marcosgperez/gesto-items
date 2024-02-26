@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +12,13 @@ Route::prefix('users')
         Route::get('/index-by-id', 'indexById');
         Route::post('/', 'store');
         Route::post('/remove', 'remove');
+    });
+
+
+Route::prefix('history')
+    ->controller(EventsController::class)
+    ->group(function () {
+        Route::get('/', 'getEvents');
     });
 
 Route::prefix('auth')

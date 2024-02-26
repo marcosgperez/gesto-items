@@ -56,9 +56,10 @@ class EventsController extends Controller
         }
     }
     
-    public function getEvents($history_id)
+    public function getEvents(Request $request)
     {
-        $events = Events::where('history_id', $history_id)->get();
+        $id = $request->input('id');
+        $events = Events::where('history_id', $id)->get();
         return $this->resultOk($events);
     }
 }
