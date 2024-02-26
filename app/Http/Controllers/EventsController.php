@@ -23,8 +23,8 @@ class EventsController extends Controller
     {
         $validated = $this->customValidate($request, [
             'event_type' => 'required|string',
-            'start_date' => 'required|integer',
-            'end_date' => 'required|integer',
+            'start_date' => 'required',
+            'end_date' => '',
             'description' => 'required|string',
             'observations' => '',
             'photos' => '',
@@ -58,8 +58,17 @@ class EventsController extends Controller
     
     public function getEvents(Request $request)
     {
-        $id = $request->input('id');
-        $events = Events::where('history_id', $id)->get();
-        return $this->resultOk($events);
+        $data = [];
+        $item = Items::find($request->input('id'));
+        if (empty($item)) {
+            return $this->resultError('Item not found');
+        }
+        $events = Events::where('history_id', $item->history_id)->get();
+        if (empty($events)) {
+            return $this->resultError('Events not found');
+        }
+        $data['item'] = $item;
+        $data['events'] = $events;
+        return $this->resultOk($data);
     }
 }

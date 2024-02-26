@@ -15,12 +15,6 @@ Route::prefix('users')
     });
 
 
-Route::prefix('history')
-    ->controller(EventsController::class)
-    ->group(function () {
-        Route::get('/', 'getEvents');
-    });
-
 Route::prefix('auth')
     ->controller(AuthController::class)
     ->group(function () {

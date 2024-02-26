@@ -20,6 +20,7 @@ class Items extends Model
         'description',
         'manual',
         'sector_id',
-        'floor_id'
+        'floor_id',
+        'history_id'
     ];
 }

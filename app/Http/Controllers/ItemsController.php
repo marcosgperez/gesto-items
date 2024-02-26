@@ -14,7 +14,7 @@ class ItemsController extends Controller
 
     private function _generateAndUploadQr($itemId)
     {
-        $frontUrl = "gestoitems://item?item_id=$itemId";
+        $frontUrl = "$itemId";
         $fileName = "qr-code-$itemId.png"; // Nombre del archivo en S3
         $qrCode = QrCode::size(200)->format('png')->generate($frontUrl);
         Storage::disk('s3')->put($fileName, $qrCode);
@@ -72,6 +72,8 @@ class ItemsController extends Controller
             $history = new Histories();
             $history->item_id = $item->id;
             $history->save();
+            $item->history_id = $history->id;
+            $item->save();
             return $this->resultOk($item);
         } catch (\Exception $error) {
             // En caso de error, devolver un error
