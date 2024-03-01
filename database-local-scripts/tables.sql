@@ -130,3 +130,26 @@ CREATE TABLE user_types (
     `deleted_at` timestamp NULL DEFAULT NULL,
     `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 );
+
+CREATE TABLE clients (
+    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL,
+    `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `phone` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `email` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `instance` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+);
+
+CREATE TABLE conversations ( 
+    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL,
+    `phone` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `chat_open_timestamp` TIMESTAMP,
+    `chat_close_timestamp` TIMESTAMP,
+    `bot_mode` int UNSIGNED NOT NULL, 
+    `client_id` int UNSIGNED NOT NULL
+);

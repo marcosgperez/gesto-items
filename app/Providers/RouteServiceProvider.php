@@ -51,6 +51,7 @@ class RouteServiceProvider extends ServiceProvider
                     require base_path('routes/eventTypes.php');
                     require base_path('routes/events.php');
                     require base_path('routes/files.php');
+                    require base_path('routes/whatsapp.php');
                 });
 
             Route::middleware('web')
