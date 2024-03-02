@@ -43,7 +43,7 @@ class EventsController extends Controller
         $event = new Events();
         $event->event_type = $validated['event_type'];
         $event->start_date = $validated['start_date'];
-        $event->end_date = $validated['end_date'];
+        $event->end_date = $validated['end_date'] ?? null;
         $event->description = $validated['description'];
         $event->observations = $validated['observations'] ?? ''; 
         $event->photos = $validated['photos'] ?? '';
