@@ -153,3 +153,36 @@ CREATE TABLE conversations (
     `bot_mode` int UNSIGNED NOT NULL, 
     `client_id` int UNSIGNED NOT NULL
 );
+
+ALTER TABLE conversations
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE items ADD COLUMN
+status int UNSIGNED NOT NULL DEFAULT 1;
+
+ALTER TABLE items ADD COLUMN
+scheduled_maintenance int UNSIGNED DEFAULT null;
+
+CREATE TABLE fifo_messages (
+    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL,
+    `message` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `phone` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `instance` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `send_timestamp` TIMESTAMP,
+);
+
+ALTER TABLE fifo_messages
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);
+
+
+ALTER TABLE fifo_messages 
+ADD COLUMN errors longtext;
+
+ALTER TABLE items 
+ADD COLUMN phones_to_remind longtext
+ADD COLUMN text_to_send longtext
+ADD COLUMN last_reminder TIMESTAMP
+ADD COLUMN reminder_interval int UNSIGNED;

@@ -9,6 +9,8 @@ services:
                 - APP_ENV=${APP_ENV}
         environment:
             - APP_ENV=${APP_ENV}
+            - EVOLUTION_KEY=${EVOLUTION_KEY}
+            - EVOLUTION_URL=${EVOLUTION_URL}
         working_dir: /app
         volumes:
             - ./:/app

@@ -7,4 +7,5 @@ Route::prefix('whatsapp')
     ->controller(WhatsappController::class)
     ->group(function () {
         Route::get('/', 'getBotMode');
+        Route::get('/send-messages', 'send_fifo_messages');
     });

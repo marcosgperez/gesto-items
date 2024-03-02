@@ -21,6 +21,11 @@ class Items extends Model
         'manual',
         'sector_id',
         'floor_id',
-        'history_id'
+        'history_id',
+        'status',
+        'phones_to_remind',
+        'text_to_send',
+        'reminder_interval',
+        'last_reminder'
     ];
 }

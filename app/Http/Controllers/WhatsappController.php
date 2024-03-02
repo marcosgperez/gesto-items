@@ -1,9 +1,10 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\FifoMessages;
 use Illuminate\Http\Request;
 use App\Models\Conversations;
 use Carbon\Carbon;
-
+use App\Services\EvolutionService;
 class WhatsappController extends Controller
 {
     public function getBotMode(Request $request)
@@ -60,6 +61,41 @@ class WhatsappController extends Controller
                 return $this->resultError($data);
             }
 
+        }
+    }
+
+    public function send_fifo_messages (Request $request) {
+        $validated = $this->customValidate($request, [
+            'instance' => 'required|string'
+        ]);
+        $data = [];
+        $messages = FifoMessages::where('instance', $validated['instance'])
+            ->where('send_timestamp', null)
+            ->orderBy('id', 'asc')
+            ->get();
+        if (empty($messages)) {
+            return $this->resultOk([]);
+        } else {
+            $evolution = new EvolutionService();
+            foreach ($messages as $message) {
+                $body = [
+                    'number' => $message->phone,
+                    'textMessage' => [
+                        'text' => $message->message,
+                    ]
+                ];
+                $response = $evolution->sendMessage($message->instance,  $body);
+                if (!($response['status'] == 400)) {
+                    $message->send_timestamp = date('Y-m-d H:i:s');
+                    $message->save();
+                } else {
+                    $message->errors = $response['message'];
+                    $message->send_timestamp = date('Y-m-d H:i:s');
+                    $message->save();
+                }
+                $data[] = $message->id;
+            }
+            return $this->resultOk($data);
         }
     }
 }
