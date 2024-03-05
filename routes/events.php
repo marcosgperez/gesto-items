@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EventsTypesController;
+use App\Http\Controllers\EventsController;
 
 Route::prefix('history')
-    ->controller(EventsTypesController::class)
+    ->controller(EventsController::class)
     ->group(function () {
         Route::get('/', 'getEvents');
         Route::post('/', 'store');
