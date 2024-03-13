@@ -10,6 +10,7 @@ class EventTypes extends Model
     protected $dates = ['deleted_at'];
     protected $fillable = [
         'name',
+        'client_id',
     ];
 
 }

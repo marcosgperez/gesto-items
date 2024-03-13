@@ -186,3 +186,39 @@ ADD COLUMN phones_to_remind longtext
 ADD COLUMN text_to_send longtext
 ADD COLUMN last_reminder TIMESTAMP
 ADD COLUMN reminder_interval int UNSIGNED;
+
+ALTER TABLE event_types 
+ADD COLUMN client_id int UNSIGNED;
+
+ALTER TABLE event_types
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE floors
+ADD COLUMN client_id int UNSIGNED;
+
+ALTER TABLE floors
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE items
+ADD COLUMN client_id int UNSIGNED;
+
+ALTER TABLE items
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE sectors
+ADD COLUMN client_id int UNSIGNED;
+
+ALTER TABLE sectors
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE user_types
+ADD COLUMN client_id int UNSIGNED;
+
+ALTER TABLE user_types
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE users
+ADD COLUMN client_id int UNSIGNED;
+
+ALTER TABLE users
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);

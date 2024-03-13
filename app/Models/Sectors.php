@@ -10,6 +10,7 @@ class Sectors extends Model
     protected $dates = ['deleted_at'];
     protected $fillable = [
         'name',
-        'floor_id'
+        'floor_id',
+        'client_id',
     ];
 }

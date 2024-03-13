@@ -9,6 +9,7 @@ class Floors extends Model
     use SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'name'
+        'name',
+        'client_id',
     ];
 }

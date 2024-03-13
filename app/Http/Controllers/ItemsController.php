@@ -9,14 +9,13 @@ use App\Models\Items;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
-
 class ItemsController extends Controller
 {
 
     private function _generateAndUploadQr($itemId)
     {
         $frontUrl = "$itemId";
-        $fileName = "qr-code-$itemId.png"; // Nombre del archivo en S3
+        $fileName = "qr-code-$itemId.png"; 
         $qrCode = QrCode::size(200)->format('png')->generate($frontUrl);
         Storage::disk('s3')->put($fileName, $qrCode);
         $url = 'https://gesto-items.s3.amazonaws.com/' . $fileName;
@@ -48,6 +47,8 @@ class ItemsController extends Controller
             'photos' => '',
         ]);
 
+        $payload = auth('api')->getPayload();
+        $client_id = $payload->get('client_id');
         $sector = Sectors::find($validated['sector_id']);
         if (empty($sector)) {
             return $this->resultError('Sector not found');
@@ -65,6 +66,7 @@ class ItemsController extends Controller
         $item->manual = $validated['manual'] ?? '';
         $item->sector_id = $sector->id;
         $item->floor_id = $sector->floor_id;
+        $item->client_id = $client_id;
         try {
             $item->save();
             $qr = $this->_generateAndUploadQr($item->id);

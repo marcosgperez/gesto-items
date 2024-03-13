@@ -9,7 +9,9 @@ class EventsTypesController extends Controller
     public function index()
     {
         try {
-            $eventTypes = EventTypes::select('id', 'name')->get();
+            $payload = auth('api')->getPayload();
+            $client_id = $payload->get('client_id');
+            $eventTypes = EventTypes::select('id', 'name')->where('client_id', $client_id)->get();
         } catch (\Exception $error) {
             return $this->resultError($error->getMessage());
         }

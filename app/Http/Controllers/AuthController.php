@@ -27,10 +27,26 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
-        if (! $token = auth()->attempt($credentials)) {
+        
+        if (!$token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
+    
+        // Obtener el usuario autenticado
+        $user = auth()->user();
+    
+        // Asegúrate de que el usuario tiene un client_id
+        if (!$user->client_id) {
+            return response()->json(['error' => 'El usuario no tiene un client_id asignado'], 401);
+        }
+    
+        // Añadir el client_id como un claim personalizado
+        $customClaims = ['client_id' => $user->client_id];
+    
+        // Generar el token con claims personalizados
+        $token = auth('api')->claims($customClaims)->attempt($credentials);
+    
+        // Usar el token con el claim personalizado para responder
         return $this->respondWithToken($token);
     }
 

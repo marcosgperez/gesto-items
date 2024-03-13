@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Sectors;
 use App\Models\Floors;
 use Illuminate\Http\Request;
-
 class SectorsController extends Controller
 {
     public function index()
@@ -33,9 +32,12 @@ class SectorsController extends Controller
             if(count($sectors) > 0) {
                 return $this->resultError('Sector already exists');
             }
+            $payload = auth('api')->getPayload();
+            $client_id = $payload->get('client_id');
             $sector = new Sectors();
             $sector->name = $validated['name'];
             $sector->floor_id = $validated['floor_id'];
+            $sector->client_id = $client_id;
             $sector->save();
         } catch (\Exception $error) {
             return $this->resultError($error->getMessage());
