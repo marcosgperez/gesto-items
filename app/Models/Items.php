@@ -28,5 +28,6 @@ class Items extends Model
         'reminder_interval',
         'last_reminder',
         'client_id',
+        'location_id'
     ];
 }

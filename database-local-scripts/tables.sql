@@ -222,3 +222,28 @@ ADD COLUMN client_id int UNSIGNED;
 
 ALTER TABLE users
 ADD FOREIGN KEY (client_id) REFERENCES clients(id);
+
+CREATE TABLE locations (
+    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL,
+    `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `address` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `client_id` int UNSIGNED
+);
+
+ALTER TABLE locations
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE items
+ADD COLUMN location_id int UNSIGNED DEFAULT null;
+
+ALTER TABLE items
+ADD FOREIGN KEY (location_id) REFERENCES locations(id);
+
+ALTER TABLE events 
+DROP COLUMN end_date;
+
+ALTER TABLE items 
+ADD COLUMN image_url varchar(255);

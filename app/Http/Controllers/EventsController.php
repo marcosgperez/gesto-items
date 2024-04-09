@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Events;
+use App\Models\EventTypes;
 use App\Models\Histories;
 use App\Models\Items;
 use Illuminate\Http\Request;
@@ -25,12 +26,12 @@ class EventsController extends Controller
         $validated = $this->customValidate($request, [
             'event_type' => 'required|string',
             'start_date' => 'required',
-            'end_date' => '',
             'description' => 'required|string',
             'observations' => '',
             'photos' => '',
             'history_id' => 'required|integer',
             'item_id' => 'required|integer',
+            'location_id' => ''
         ]);
         $payload = auth('api')->getPayload();
         $client_id = $payload->get('client_id');
@@ -45,17 +46,35 @@ class EventsController extends Controller
         if ($item->client_id != $client_id) {
             return $this->resultError('Item not found');
         }
+        $eventTypes = EventTypes::where('client_id', $client_id)->where('name', $validated['event_type'])->get();
+        if (empty($eventTypes)) {
+            return $this->resultError('Event type not found');
+        }
         $event = new Events();
         $event->event_type = $validated['event_type'];
         $event->start_date = $validated['start_date'];
-        $event->end_date = $validated['end_date'] ?? null;
         $event->description = $validated['description'];
         $event->observations = $validated['observations'] ?? ''; 
         $event->photos = $validated['photos'] ?? '';
         $event->history_id = $validated['history_id'];
         $event->item_id = $validated['item_id'];
-        
         try {
+            if ($validated['event_type'] == 'Asignacion') {
+                $item->location_id = $validated['location_id'];
+                $item->save();
+            }
+            if ($validated['event_type'] == 'Rotura parcial' || $validated['event_type'] == 'Arreglo parcial') {
+                $item->status = 2;
+                $item->save();
+            }
+            if ($validated['event_type'] == 'Rotura Total') {
+                $item->status = 3;
+                $item->save();
+            }
+            if ($validated['event_type'] == 'Arreglo Total') {
+                $item->status = 1;
+                $item->save();
+            }
             $event->save();
         } catch (\Exception $error) {
             return $this->resultError($error->getMessage());

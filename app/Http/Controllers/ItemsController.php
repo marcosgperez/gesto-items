@@ -9,13 +9,14 @@ use App\Models\Items;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
+
 class ItemsController extends Controller
 {
 
     private function _generateAndUploadQr($itemId)
     {
         $frontUrl = "$itemId";
-        $fileName = "qr-code-$itemId.png"; 
+        $fileName = "qr-code-$itemId.png";
         $qrCode = QrCode::size(200)->format('png')->generate($frontUrl);
         Storage::disk('s3')->put($fileName, $qrCode);
         $url = 'https://gesto-items.s3.amazonaws.com/' . $fileName;
@@ -36,36 +37,40 @@ class ItemsController extends Controller
     {
         $validated = $this->customValidate($request, [
             'name' => 'required|string',
-            'brand' => 'required|string',
-            'code' => 'required|string',
-            'serial' => 'required|string',
-            'model' => 'required|string',
-            'chasis' => 'required|string',
-            'description' => 'required|string',
-            'sector_id' => 'required|integer',
+            'brand' => 'string',
+            'code' => 'string',
+            'serial' => 'string',
+            'model' => 'string',
+            'chasis' => 'string',
+            'description' => 'string',
+            'sector_id' => 'integer',
             'manual' => '',
             'photos' => '',
+            'location_id' => ''
         ]);
+
+        if (!empty($validated['sector_id'])) {
+            $sector = Sectors::find($validated['sector_id']);
+            if (empty($sector)) {
+                return $this->resultError('Sector not found');
+            }
+        }
 
         $payload = auth('api')->getPayload();
         $client_id = $payload->get('client_id');
-        $sector = Sectors::find($validated['sector_id']);
-        if (empty($sector)) {
-            return $this->resultError('Sector not found');
-        }
-
         $item = new Items();
         $item->name = $validated['name'];
         $item->photos = $validated['photos'] ?? '';
-        $item->brand = $validated['brand'];
-        $item->code = $validated['code'];
-        $item->serial = $validated['serial'];
-        $item->model = $validated['model'];
-        $item->chasis = $validated['chasis'];
-        $item->description = $validated['description'];
+        $item->brand = $validated['brand'] ?? '';
+        $item->code = $validated['code'] ?? '';
+        $item->serial = $validated['serial'] ?? '';
+        $item->model = $validated['model'] ?? '';
+        $item->chasis = $validated['chasis'] ?? '';
+        $item->description = $validated['description'] ?? '';
         $item->manual = $validated['manual'] ?? '';
-        $item->sector_id = $sector->id;
-        $item->floor_id = $sector->floor_id;
+        $item->location_id = $validated['location_id'] ?? null;
+        $item->sector_id = $sector->id ?? null;
+        $item->floor_id = $sector->floor_id ?? null;
         $item->client_id = $client_id;
         try {
             $item->save();
@@ -138,7 +143,8 @@ class ItemsController extends Controller
         }
     }
 
-    public function greenItem (Request $request) {
+    public function greenItem(Request $request)
+    {
         $validated = $this->customValidate($request, [
             'id' => 'required|integer'
         ]);
@@ -158,5 +164,50 @@ class ItemsController extends Controller
             return $this->resultError($error->getMessage());
         }
     }
+
+    public function search(Request $request)
+    {
+        $validated = $this->customValidate($request, [
+            'query' => 'nullable|string',
+            'page' => 'nullable|integer',
+            'per_page' => 'nullable|integer',
+        ]);
+    
+        $query = $validated['query'];
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 10);
+    
+        try {
+            $payload = auth('api')->getPayload();
+            $client_id = $payload->get('client_id');
+    
+            $itemsQuery = Items::where('client_id', $client_id);
+    
+            if ($query !== null) {
+                $itemsQuery->where(function ($queryBuilder) use ($query) {
+                    $queryBuilder->where('code', 'like', "%$query%")
+                        ->orWhere('brand', 'like', "%$query%")
+                        ->orWhere('serial', 'like', "%$query%")
+                        ->orWhere('name', 'like', "%$query%")
+                        ->orWhere('model', 'like', "%$query%");
+                });
+            }
+    
+            $paginatedItems = $itemsQuery->paginate($perPage, ['*'], 'page', $page);
+    
+            return response([
+                'ok' => 1,
+                'data' => $paginatedItems->items(),
+                'current_page' => $paginatedItems->currentPage(),
+                'from' => $paginatedItems->firstItem(),
+                'last_page' => $paginatedItems->lastPage(),
+                'per_page' => $paginatedItems->perPage(),
+                'to' => $paginatedItems->lastItem(),
+                'total' => $paginatedItems->total()
+            ], 200);
+        } catch (\Exception $error) {
+            return $this->resultError($error->getMessage());
+        }
+    }    
 
 }

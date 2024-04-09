@@ -12,4 +12,5 @@ Route::prefix('items')
         Route::get('/remind-status', 'remind_status');
         Route::post('/set-remind', 'set_reminder');
         Route::post('/green', 'greenItem');
+        Route::get('/search', 'search');
     });
