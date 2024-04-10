@@ -46,7 +46,8 @@ class ItemsController extends Controller
             'sector_id' => 'integer',
             'manual' => '',
             'photos' => '',
-            'location_id' => ''
+            'location_id' => '',
+            'image' => ''
         ]);
 
         if (!empty($validated['sector_id'])) {
@@ -55,9 +56,15 @@ class ItemsController extends Controller
                 return $this->resultError('Sector not found');
             }
         }
-
         $payload = auth('api')->getPayload();
         $client_id = $payload->get('client_id');
+
+        if (!empty($validated['image'])) {
+            $file = $request->file('image');
+            $path = $file->store('images/' . $client_id . '/items', 's3');
+            $imageUrl = Storage::disk('s3')->url($path);
+        }
+
         $item = new Items();
         $item->name = $validated['name'];
         $item->photos = $validated['photos'] ?? '';
@@ -71,6 +78,7 @@ class ItemsController extends Controller
         $item->location_id = $validated['location_id'] ?? null;
         $item->sector_id = $sector->id ?? null;
         $item->floor_id = $sector->floor_id ?? null;
+        $item->image_url = $imageUrl ?? '';
         $item->client_id = $client_id;
         try {
             $item->save();
