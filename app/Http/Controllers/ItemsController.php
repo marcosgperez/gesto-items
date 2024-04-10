@@ -9,7 +9,7 @@ use App\Models\Items;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\Events;
 class ItemsController extends Controller
 {
 
@@ -217,5 +217,23 @@ class ItemsController extends Controller
             return $this->resultError($error->getMessage());
         }
     }    
+
+    public function getItemDetails(Request $request) 
+    {
+        $validated = $this->customValidate($request, [
+            'id' => 'required|integer'
+        ]);
+        $data = [];
+        $payload = auth('api')->getPayload();
+        $client_id = $payload->get('client_id');
+        $item = Items::where('id', $validated['id'])->where('client_id', $client_id)->first();
+        if (empty($item)) {
+            return $this->resultError('Item not found');
+        }
+        $events = Events::where('history_id', $item->history_id)->get();
+        $data['item'] = $item;
+        $data['events'] = empty($events) ? null : $events;
+        return $this->resultOk($data);
+    }
 
 }
