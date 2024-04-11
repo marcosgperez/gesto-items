@@ -183,7 +183,7 @@ class ItemsController extends Controller
     
         $query = $validated['query'];
         $page = $request->input('page', 1);
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input('per_page', 6);
     
         try {
             $payload = auth('api')->getPayload();
