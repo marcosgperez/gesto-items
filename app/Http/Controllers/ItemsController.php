@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Events;
+use App\Models\Locations;
 class ItemsController extends Controller
 {
 
@@ -233,6 +234,16 @@ class ItemsController extends Controller
         $events = Events::where('history_id', $item->history_id)->get();
         $data['item'] = $item;
         $data['events'] = empty($events) ? null : $events;
+        $locations = Locations::where('client_id', $client_id)->get();
+        if (!empty($locations)) {
+            $data['location'] = $locations->where('id', $item->location_id)->first();
+        } else {
+            $data['location'] = [
+                'id' => "",
+                'name' => "",
+                'address' => ""
+            ];
+        }
         return $this->resultOk($data);
     }
 
