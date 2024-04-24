@@ -1,0 +1,23 @@
+name: Deploy to Digital Ocean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker registry
+        run: echo "$DIGITAL_TOKEN" | docker login -u docker -p $DIGITAL_TOKEN registry.digitalocean.com/gesto-api
+
+      - name: Pull Docker image
+        run: docker pull registry.digitalocean.com/gesto-api/prod-gesto-items:latest
+
+      - name: Run Docker container
+        run: docker run -d -p 80:8080 registry.digitalocean.com/gesto-api/prod-gesto-items:latest
