@@ -1,5 +1,28 @@
 # Usado para la construcción en producción.
-FROM 702643951612.dkr.ecr.us-west-1.amazonaws.com/prod-gesto-items-base-image:latest as php
+# Usado para construir en producción.
+FROM php:8.2-fpm
+
+# Setear variables de entorno
+ENV PHP_OPCACHE_ENABLE=1 \
+    PHP_OPCACHE_ENABLE_CLI=0 \
+    PHP_OPCACHE_VALIDATE_TIMESTAMPS=0 \
+    PHP_OPCACHE_REVALIDATE_FREQ=0
+
+# Instalar dependencias del sistema y extensiones de PHP
+RUN apt-get update && apt-get install -y \
+    unzip \
+    libpq-dev \
+    libcurl4-gnutls-dev \
+    nginx \
+    libonig-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql bcmath curl opcache mbstring
+
+# Copiar el ejecutable de Composer
+COPY --from=composer:2.3.5 /usr/bin/composer /usr/bin/composer
 
 # Instala ImageMagick y la extensión Imagick de PHP.
 # Nota: Los comandos exactos pueden variar dependiendo de la imagen base de tu contenedor.
