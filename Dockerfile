@@ -1,5 +1,6 @@
 # Usado para la construcción en producción.
 # Usado para construir en producción.
+# FROM 702643951612.dkr.ecr.us-west-1.amazonaws.com/prod-gesto-items-base-image:latest as php
 FROM php:8.2-fpm
 
 # Setear variables de entorno

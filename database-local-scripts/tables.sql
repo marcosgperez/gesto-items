@@ -247,3 +247,32 @@ DROP COLUMN end_date;
 
 ALTER TABLE items 
 ADD COLUMN image_url varchar(255);
+
+CREATE TABLE checks (
+    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL,
+    `image_url` varchar(255),
+    `amount` int UNSIGNED,
+    `payment_date` TIMESTAMP,
+    `from` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `to` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `status` int UNSIGNED NOT NULL DEFAULT 1,
+    `instance` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `phone` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+);
+
+CREATE TABLE whatsapp_phones (
+    `id` int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` timestamp NULL DEFAULT NULL,
+    `phone_id` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `token` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `phone` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `client_id` int UNSIGNED
+);
+
+ALTER TABLE whatsapp_phones
+ADD FOREIGN KEY (client_id) REFERENCES clients(id);

@@ -1,10 +1,13 @@
 <?php
 namespace App\Http\Controllers;
+
 use App\Models\FifoMessages;
 use Illuminate\Http\Request;
 use App\Models\Conversations;
 use Carbon\Carbon;
 use App\Services\EvolutionService;
+use App\Adapters\Whatsapp\EvolutionWebhookIncomingData;
+use App\Models\WhatsappPhones;
 class WhatsappController extends Controller
 {
     public function getBotMode(Request $request)
@@ -97,5 +100,50 @@ class WhatsappController extends Controller
             }
             return $this->resultOk($data);
         }
+    }
+
+    public function webhook_evolution(Request $request)
+    {
+        $incoming_webhook_body = $request->all();
+        unset($incoming_webhook_body['q']);
+        $phonesInfo = WhatsappPhones::getAllPhoneCachedConfigInfo();
+        $thisPhoneInfo = $phonesInfo[$incoming_webhook_body['instance']] ?? null;
+        if ($thisPhoneInfo === null) {
+            return response("Instancia inexistente", 200);
+        }
+        if ($incoming_webhook_body['event'] === "messages.update") {
+            $status = "";
+            switch ($incoming_webhook_body['data']['status']) {
+                case "READ":
+                    $status = "read";
+                    break;
+                case "DELIVERY_ACK":
+                    $status = "delivered";
+                    break;
+                default:
+                    return response("ACK de whatsapp no pudo ser procesado, status desconocido", 200);
+            }
+            if (!$status) {
+                return response("ACK de whatsapp no pudo ser procesado, status desconocido", 200);
+            }
+            return response("ACK de whatsapp procesado", 200);
+        }
+        if ($incoming_webhook_body['event'] !== "messages.upsert") {
+            return response("Solo se reciben upserts", 200);
+        }
+        $wh = new EvolutionWebhookIncomingData($incoming_webhook_body);
+        if ($wh->isFromMe()) {
+            return response("Mensaje fromMe", 200);
+        }
+        if ($wh->messageType() === "error") {
+            return response("Mensaje de tipo Desconocido", 200);
+        }
+        $allowedTypes = [
+            "text", "image", "audio", "document", "video", "sticker", "vcard", "location"
+        ];
+        if (!in_array($wh->messageType(), $allowedTypes)) {
+            return response("Mensaje den tipo Invalido", 200);
+        };
+        return response("Mensaje de whatsapp procesado", 200);
     }
 }

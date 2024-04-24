@@ -39,6 +39,14 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/userTypes.php'));
 
             Route::prefix('v1')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/webhooks.php'));
+
+            Route::prefix('v1')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/checks.php'));
+
+            Route::prefix('v1')
                 ->middleware('api')
                 ->namespace($this->namespace)
                 ->group(function () {
