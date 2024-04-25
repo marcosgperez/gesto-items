@@ -10,3 +10,5 @@ Route::prefix('checks')
         Route::post('/', 'createCheck');
         Route::get('/remind', 'remind_check');
     });
+
+    
