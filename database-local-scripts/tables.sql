@@ -255,7 +255,7 @@ CREATE TABLE checks (
     `deleted_at` timestamp NULL DEFAULT NULL,
     `image_url` varchar(255),
     `amount` int UNSIGNED,
-    `payment_date` TIMESTAMP,
+    `payment_date` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
     `from` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
     `to` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
     `status` int UNSIGNED NOT NULL DEFAULT 1,
